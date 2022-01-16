@@ -207,7 +207,10 @@ func (h *helheim) SetHeaders(sessionId int, headers map[string]string) (*SetHead
 
 	C.free(unsafe.Pointer(headersParam))
 
-	return jsonPayload, err
+	setHeadersResponse := SetHeadersResponse{}
+	err = h.handleResponse(jsonPayload, &setHeadersResponse)
+
+	return &setHeadersResponse, err
 }
 
 func (h *helheim) SetCookie(sessionId int, cookie string) (interface{}, error) {
