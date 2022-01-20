@@ -3,7 +3,7 @@
 ## Prerequisites
 This go library was created with
 * go 1.15 
-* helheim 0.8.1 py38
+* helheim 0.8.2 py38
 
 ## Install Python
 
@@ -12,14 +12,35 @@ Install Python in a version which is compatible with helheim.
 I used this: https://www.python.org/ftp/python/3.8.5/python-3.8.5-macosx10.9.pkg
 
 ## Windows
-TBD
+TBD (Did not test that on windows)
 
 ## Linux
-TBD
+
+### Ubuntu
+Install Python in a version which is compatible with helheim.
+I used this:
+```
+apt-get update 
+apt-get upgrade
+
+apt-get install python3 python3-dev python3-pip
+
+# Download Go 1.15 and install it to /usr/local/go
+curl -s https://storage.googleapis.com/golang/go1.15.linux-amd64.tar.gz| tar -v -C /usr/local -xz
+
+python3 -m pip install -U --force-reinstall pip
+pip install --no-cache --upgrade pip setuptools Pillow cffi
+RUN cd /usr/local/helheim-0.8.2-py38-linux.x86_64 && python setup.py install
+
+```
 
 ## Build 
-Build the cffi library. It is very important that you download from discord the tar.gz file with the **correct** version and for your system your are building your go app.
-In my case with the above installed python version on MacOS it is `helheim-0.8.1-py38-darwin.x86_64.tar.gz`
+
+Build the cffi library. It is very important that you download from discord the tar.gz file with the **correct** version and for your system you are building your go app.
+In my case with the above installed python version on MacOS it is `helheim-0.8.2-py38-darwin.x86_64.tar.gz`
+On Ubuntu (amd64) it is `helheim-0.8.2-py38-linux.x86_64.tar.gz`.
+
+Install helheim by running `python setup.py install` in the projects root directory.
 
 Now build the cffi library as described in python example 3. Navigate inside the directory and run:  
 `python build-cffi.py`. In my case `python3 build-cffi.py`
@@ -33,14 +54,18 @@ This will create the following files for you:
 
 ## Copy cffi library
 Copy the `helheim_cffi` library (`dylib, so or dll`) into your pythons lib directory.
-In my case it is: `/Library/Frameworks/Python.framework/Versions/3.8/lib`
+In my case it is: `/Library/Frameworks/Python.framework/Versions/3.8/lib`.
+Under Ubuntu it is: `/usr/include/python3.8`
 
 **Note:** On Linux and MacOS create a duplicate of the cffi library file and name it `libhelheim_cffi.dylib` (MacOS) or `libhelheim_cffi.so` (Linux). I have to keep **both** files in the directory to get the example running.
 
 In addition copy the `helheim_cffi.dylib` file in your working directory of your running app or use the following env variable to start your application:
 ```
 # Specify where application finds the cffi lib file on runtime
+# MacOS
 # DYLD_LIBRARY_PATH="/Library/Frameworks/Python.framework/Versions/3.8/lib" ./yourCompiledAppBinary
+# Linux
+# LD_LIBRARY_PATH="/usr/include/python3.8" ./yourCompiledAppBinary
 
 # We assume here that you copied the cffi lib file into the applications working directory and we do not need to define the path for the dyld
 # ./yourCompiledAppBinary
