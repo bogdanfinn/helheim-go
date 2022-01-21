@@ -132,7 +132,7 @@ Check `./example/build.sh` for the correct `go build` command. This script will 
     
         log.Println("response:")
         log.Println(resp)
-	}
+    }
 ```
 For more examples check `./example/main.go`
 
