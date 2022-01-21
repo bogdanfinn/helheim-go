@@ -83,7 +83,7 @@ Check `./example/build.sh` for the correct `go build` command. This script will 
     package main
     
     import(
-		helheim_go "github.com/bogdanfinn/helheim-go"
+	helheim_go "github.com/bogdanfinn/helheim-go"
         "log"
         "net/http"
     )
