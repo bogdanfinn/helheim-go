@@ -4,8 +4,8 @@ import "fmt"
 
 type Client interface {
 	NewSession(options CreateSessionOptions) (Session, error)
-	DeleteSession(sessionId int) error
 	GetBalance() (*BalanceResponse, error)
+	GetHelheim() Helheim
 }
 
 type client struct {
@@ -36,6 +36,10 @@ func (c *client) NewSession(options CreateSessionOptions) (Session, error) {
 
 func (c *client) GetBalance() (*BalanceResponse, error) {
 	return c.helheim.GetBalance()
+}
+
+func (c *client) GetHelheim() Helheim {
+	return c.helheim
 }
 
 func (c *client) DeleteSession(sessionId int) error {
