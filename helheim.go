@@ -1,6 +1,8 @@
 package helheim_go
 
 /*
+#cgo LDFLAGS: -Wl,-rpath /Library/Frameworks/Python.framework/Versions/3.8 -L/Library/Frameworks/Python.framework/Versions/3.8/lib -lpython3.8 -lhelheim_cffi
+#cgo CFLAGS: -I/Library/Frameworks/Python.framework/Versions/3.8/include/python3.8
 char *auth(char apiKey[], int discover);
 char *getBalance();
 char *bifrost(int sessionID, char libraryPath[]);
