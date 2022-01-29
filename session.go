@@ -149,8 +149,5 @@ func (s *session) Delete() error {
 		return fmt.Errorf("failed to delete session %d", s.GetSessionId())
 	}
 
-	println("")
-	//s.logger.Infof("deleted session with id %d", s.GetSessionId())
-
 	return nil
 }
