@@ -57,6 +57,9 @@ func main() {
 		return
 	}
 
+	log.Println("request response status code:")
+	log.Println(resp.Response.StatusCode)
+
 	log.Println("request response:")
 	log.Println(resp)
 

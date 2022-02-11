@@ -3,7 +3,7 @@
 ## Prerequisites
 This go library was created with
 * go 1.15 
-* helheim 0.8.2 py38
+* helheim 0.8.5 py38
 
 ## Install Python
 
