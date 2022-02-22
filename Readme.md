@@ -86,7 +86,11 @@ Check `./example/build.sh` for the correct `go build` command. This script will 
     )
 
     func main() {
-        helheimClient, err := helheim_go.NewClient("YOUR_API_KEY", false, nil)
+        // NewClient() returns each time a new instance which is requesting helheims auth() endpoint
+        // helheimClient, err := helheim_go.NewClient("YOUR_API_KEY", false, nil)
+        
+        // Provide() is creating one helheim client instance and returning the same authenticated instance on every Provide() call
+        helheimClient, err := helheim_go.ProvideClient("YOUR_API_KEY", false, nil)
         
         if err != nil {
             log.Println(err)

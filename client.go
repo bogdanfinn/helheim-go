@@ -1,6 +1,9 @@
 package helheim_go
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
 type Client interface {
 	NewSession(options CreateSessionOptions) (Session, error)
@@ -11,6 +14,30 @@ type Client interface {
 type client struct {
 	logger  Logger
 	helheim Helheim
+}
+
+var clientContainer = struct {
+	sync.Mutex
+	instance Client
+}{}
+
+func ProvideClient(apiKey string, discover bool, logger Logger)(Client, error) {
+	clientContainer.Lock()
+	defer clientContainer.Unlock()
+
+	if clientContainer.instance != nil {
+		return clientContainer.instance, nil
+	}
+
+	instance, err := NewClient(apiKey, discover, logger)
+
+	if err != nil {
+		return nil, err
+	}
+
+	clientContainer.instance = instance
+
+	return clientContainer.instance, nil
 }
 
 func NewClient(apiKey string, discover bool, logger Logger) (Client, error) {
