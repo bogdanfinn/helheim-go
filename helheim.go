@@ -144,7 +144,6 @@ func (h *helheim) Request(sessionId int, options RequestOptions) (*RequestRespon
 	sId := C.int(sessionId)
 
 	jsonPayload := C.GoString(C.request(sId, opt))
-
 	C.free(unsafe.Pointer(opt))
 
 	requestResponse := RequestResponse{}
