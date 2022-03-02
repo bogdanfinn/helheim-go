@@ -26,8 +26,12 @@ import "C"
 import (
 	"encoding/json"
 	"fmt"
+	"sync"
+	"time"
 	"unsafe"
 )
+
+const authValidMinutes = 30
 
 type Helheim interface {
 	Auth() (*AuthResponse, error)
@@ -50,6 +54,8 @@ type Helheim interface {
 type helheim struct {
 	logger   Logger
 	apiKey   string
+	authLck  sync.Mutex
+	lastAuth *time.Time
 	discover bool
 }
 
@@ -78,6 +84,13 @@ func newHelheim(apiKey string, discover bool, logger Logger) (Helheim, error) {
 }
 
 func (h *helheim) Auth() (*AuthResponse, error) {
+	h.authLck.Lock()
+	defer h.authLck.Unlock()
+
+	if !h.needReAuth() {
+		return nil, nil
+	}
+
 	apiKey := C.CString(h.apiKey)
 	discover := 0
 
@@ -94,10 +107,18 @@ func (h *helheim) Auth() (*AuthResponse, error) {
 	authResponse := AuthResponse{}
 	err := h.handleResponse(jsonPayload, &authResponse)
 
+	now := time.Now()
+	h.lastAuth = &now
+
 	return &authResponse, err
 }
 
 func (h *helheim) CreateSession(options CreateSessionOptions) (*SessionResponse, error) {
+	err := h.reAuth()
+	if err != nil {
+		return nil, err
+	}
+
 	optionsString, err := json.Marshal(options)
 
 	if err != nil {
@@ -116,35 +137,55 @@ func (h *helheim) CreateSession(options CreateSessionOptions) (*SessionResponse,
 }
 
 func (h *helheim) GetBalance() (*BalanceResponse, error) {
+	err := h.reAuth()
+	if err != nil {
+		return nil, err
+	}
+
 	jsonPayload := C.GoString(C.getBalance())
 
 	balanceResponse := BalanceResponse{}
-	err := h.handleResponse(jsonPayload, &balanceResponse)
+	err = h.handleResponse(jsonPayload, &balanceResponse)
 
 	return &balanceResponse, err
 }
 
 func (h *helheim) Version() (*VersionResponse, error) {
+	err := h.reAuth()
+	if err != nil {
+		return nil, err
+	}
+
 	jsonPayload := C.GoString(C.helheimVersion())
 
 	versionResponse := VersionResponse{}
-	err := h.handleResponse(jsonPayload, &versionResponse)
+	err = h.handleResponse(jsonPayload, &versionResponse)
 
 	return &versionResponse, err
 }
 
 func (h *helheim) DeleteSession(sessionId int) (*SessionDeleteResponse, error) {
+	err := h.reAuth()
+	if err != nil {
+		return nil, err
+	}
+
 	sId := C.int(sessionId)
 
 	jsonPayload := C.GoString(C.deleteSession(sId))
 
 	deleteResponse := SessionDeleteResponse{}
-	err := h.handleResponse(jsonPayload, &deleteResponse)
+	err = h.handleResponse(jsonPayload, &deleteResponse)
 
 	return &deleteResponse, err
 }
 
 func (h *helheim) Request(sessionId int, options RequestOptions) (*RequestResponse, error) {
+	err := h.reAuth()
+	if err != nil {
+		return nil, err
+	}
+
 	optionsString, err := json.Marshal(options)
 
 	if err != nil {
@@ -165,6 +206,11 @@ func (h *helheim) Request(sessionId int, options RequestOptions) (*RequestRespon
 }
 
 func (h *helheim) Bifrost(sessionId int, libraryPath string) (interface{}, error) {
+	err := h.reAuth()
+	if err != nil {
+		return nil, err
+	}
+
 	lp := C.CString(libraryPath)
 	sId := C.int(sessionId)
 
@@ -176,6 +222,11 @@ func (h *helheim) Bifrost(sessionId int, libraryPath string) (interface{}, error
 }
 
 func (h *helheim) Wokou(sessionId int, browser string) (*WokouResponse, error) {
+	err := h.reAuth()
+	if err != nil {
+		return nil, err
+	}
+
 	b := C.CString(browser)
 	sId := C.int(sessionId)
 
@@ -184,12 +235,17 @@ func (h *helheim) Wokou(sessionId int, browser string) (*WokouResponse, error) {
 	C.free(unsafe.Pointer(b))
 
 	wokouResponse := WokouResponse{}
-	err := h.handleResponse(jsonPayload, &wokouResponse)
+	err = h.handleResponse(jsonPayload, &wokouResponse)
 
 	return &wokouResponse, err
 }
 
 func (h *helheim) SetProxy(sessionId int, proxy string) (*SetProxyResponse, error) {
+	err := h.reAuth()
+	if err != nil {
+		return nil, err
+	}
+
 	p := C.CString(proxy)
 	sId := C.int(sessionId)
 
@@ -198,12 +254,17 @@ func (h *helheim) SetProxy(sessionId int, proxy string) (*SetProxyResponse, erro
 	C.free(unsafe.Pointer(p))
 
 	setProxyResponse := SetProxyResponse{}
-	err := h.handleResponse(jsonPayload, &setProxyResponse)
+	err = h.handleResponse(jsonPayload, &setProxyResponse)
 
 	return &setProxyResponse, err
 }
 
 func (h *helheim) SetHeaders(sessionId int, headers map[string]string) (*SetHeadersResponse, error) {
+	err := h.reAuth()
+	if err != nil {
+		return nil, err
+	}
+
 	headersString, err := json.Marshal(headers)
 
 	if err != nil {
@@ -224,6 +285,11 @@ func (h *helheim) SetHeaders(sessionId int, headers map[string]string) (*SetHead
 }
 
 func (h *helheim) SetCookie(sessionId int, cookie string) (interface{}, error) {
+	err := h.reAuth()
+	if err != nil {
+		return nil, err
+	}
+
 	c := C.CString(cookie)
 	sId := C.int(sessionId)
 
@@ -235,6 +301,11 @@ func (h *helheim) SetCookie(sessionId int, cookie string) (interface{}, error) {
 }
 
 func (h *helheim) DelCookie(sessionId int, cookie string) (interface{}, error) {
+	err := h.reAuth()
+	if err != nil {
+		return nil, err
+	}
+
 	c := C.CString(cookie)
 	sId := C.int(sessionId)
 
@@ -246,6 +317,11 @@ func (h *helheim) DelCookie(sessionId int, cookie string) (interface{}, error) {
 }
 
 func (h *helheim) Debug(sessionId int, state int) (interface{}, error) {
+	err := h.reAuth()
+	if err != nil {
+		return nil, err
+	}
+
 	sId := C.int(sessionId)
 	stateInt := C.int(state)
 
@@ -255,6 +331,11 @@ func (h *helheim) Debug(sessionId int, state int) (interface{}, error) {
 }
 
 func (h *helheim) SetKasada(sessionId int, options KasadaOptions) (interface{}, error) {
+	err := h.reAuth()
+	if err != nil {
+		return nil, err
+	}
+
 	optionsString, err := json.Marshal(options)
 
 	if err != nil {
@@ -272,6 +353,11 @@ func (h *helheim) SetKasada(sessionId int, options KasadaOptions) (interface{}, 
 }
 
 func (h *helheim) SetKasadaHooks(sessionId int, options KasadaHooksOptions) (interface{}, error) {
+	err := h.reAuth()
+	if err != nil {
+		return nil, err
+	}
+
 	optionsString, err := json.Marshal(options)
 
 	if err != nil {
@@ -301,6 +387,23 @@ func (h *helheim) handleResponse(jsonPayload string, ret interface{}) error {
 	}
 
 	err = json.Unmarshal([]byte(jsonPayload), ret)
+
+	return err
+}
+
+func (h *helheim) needReAuth() bool {
+	now := time.Now()
+
+	minutes := now.Sub(*h.lastAuth).Minutes()
+
+	return minutes >= authValidMinutes
+}
+
+func (h *helheim) reAuth() error {
+	if !h.needReAuth() {
+		return nil
+	}
+	_, err := h.Auth()
 
 	return err
 }
