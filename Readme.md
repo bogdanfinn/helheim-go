@@ -3,7 +3,11 @@
 ## Prerequisites
 This go library was created with
 * go 1.15 
-* helheim 0.8.5 py38
+* helheim 0.8.6 py38
+
+## Warning
+`char *helheimVersion();` is not in the default cffi lib you can build out of the examples.
+Please check helheim discord server how to add this function and then be able to call `Version()` on the helheimClient.
 
 ## Install Python
 

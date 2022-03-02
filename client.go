@@ -8,6 +8,7 @@ import (
 type Client interface {
 	NewSession(options CreateSessionOptions) (Session, error)
 	GetBalance() (*BalanceResponse, error)
+	Version() (*VersionResponse, error)
 	GetHelheim() Helheim
 }
 
@@ -21,7 +22,7 @@ var clientContainer = struct {
 	instance Client
 }{}
 
-func ProvideClient(apiKey string, discover bool, logger Logger)(Client, error) {
+func ProvideClient(apiKey string, discover bool, logger Logger) (Client, error) {
 	clientContainer.Lock()
 	defer clientContainer.Unlock()
 
@@ -63,6 +64,10 @@ func (c *client) NewSession(options CreateSessionOptions) (Session, error) {
 
 func (c *client) GetBalance() (*BalanceResponse, error) {
 	return c.helheim.GetBalance()
+}
+
+func (c *client) Version() (*VersionResponse, error) {
+	return c.helheim.Version()
 }
 
 func (c *client) GetHelheim() Helheim {
