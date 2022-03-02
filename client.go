@@ -22,7 +22,7 @@ var clientContainer = struct {
 	instance Client
 }{}
 
-func ProvideClient(apiKey string, discover bool, logger Logger) (Client, error) {
+func ProvideClient(apiKey string, discover bool, withAutoReAuth bool, logger Logger) (Client, error) {
 	clientContainer.Lock()
 	defer clientContainer.Unlock()
 
@@ -30,7 +30,7 @@ func ProvideClient(apiKey string, discover bool, logger Logger) (Client, error) 
 		return clientContainer.instance, nil
 	}
 
-	instance, err := NewClient(apiKey, discover, logger)
+	instance, err := NewClient(apiKey, discover, withAutoReAuth, logger)
 
 	if err != nil {
 		return nil, err
@@ -41,12 +41,12 @@ func ProvideClient(apiKey string, discover bool, logger Logger) (Client, error) 
 	return clientContainer.instance, nil
 }
 
-func NewClient(apiKey string, discover bool, logger Logger) (Client, error) {
+func NewClient(apiKey string, discover bool, withAutoReAuth bool, logger Logger) (Client, error) {
 	if logger == nil {
 		logger = NewNoopLogger()
 	}
 
-	h, err := newHelheim(apiKey, discover, logger)
+	h, err := newHelheim(apiKey, discover, withAutoReAuth, logger)
 
 	if err != nil {
 		return nil, err

@@ -52,22 +52,24 @@ type Helheim interface {
 }
 
 type helheim struct {
-	logger   Logger
-	apiKey   string
-	authLck  sync.Mutex
-	lastAuth *time.Time
-	discover bool
+	logger         Logger
+	apiKey         string
+	authLck        sync.Mutex
+	lastAuth       *time.Time
+	discover       bool
+	withAutoReAuth bool
 }
 
-func newHelheim(apiKey string, discover bool, logger Logger) (Helheim, error) {
+func newHelheim(apiKey string, discover bool, withAutoReAuth bool, logger Logger) (Helheim, error) {
 	if logger == nil {
 		logger = NewNoopLogger()
 	}
 
 	h := &helheim{
-		logger:   logger,
-		apiKey:   apiKey,
-		discover: discover,
+		logger:         logger,
+		apiKey:         apiKey,
+		withAutoReAuth: withAutoReAuth,
+		discover:       discover,
 	}
 
 	auth, err := h.Auth()
@@ -392,6 +394,10 @@ func (h *helheim) handleResponse(jsonPayload string, ret interface{}) error {
 }
 
 func (h *helheim) needReAuth() bool {
+	if h.lastAuth == nil {
+		return true
+	}
+
 	now := time.Now()
 
 	minutes := now.Sub(*h.lastAuth).Minutes()
@@ -400,9 +406,14 @@ func (h *helheim) needReAuth() bool {
 }
 
 func (h *helheim) reAuth() error {
+	if !h.withAutoReAuth {
+		return nil
+	}
+
 	if !h.needReAuth() {
 		return nil
 	}
+
 	_, err := h.Auth()
 
 	return err
