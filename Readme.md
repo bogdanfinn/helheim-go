@@ -94,7 +94,7 @@ Check `./example/build.sh` for the correct `go build` command. This script will 
         // helheimClient, err := helheim_go.NewClient("YOUR_API_KEY", false, nil)
         
         // Provide() is creating one helheim client instance and returning the same authenticated instance on every Provide() call
-        helheimClient, err := helheim_go.ProvideClient("YOUR_API_KEY", false, nil)
+        helheimClient, err := helheim_go.ProvideClient("YOUR_API_KEY", false, true, nil)
         
         if err != nil {
             log.Println(err)

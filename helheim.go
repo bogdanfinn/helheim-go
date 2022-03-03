@@ -70,6 +70,7 @@ func newHelheim(apiKey string, discover bool, withAutoReAuth bool, logger Logger
 		apiKey:         apiKey,
 		withAutoReAuth: withAutoReAuth,
 		discover:       discover,
+		authLck:        sync.Mutex{},
 	}
 
 	auth, err := h.Auth()
@@ -401,6 +402,8 @@ func (h *helheim) needReAuth() bool {
 	now := time.Now()
 
 	minutes := now.Sub(*h.lastAuth).Minutes()
+
+	h.logger.Infof("checked reauth minutes", minutes)
 
 	return minutes >= authValidMinutes
 }
