@@ -403,7 +403,7 @@ func (h *helheim) needReAuth() bool {
 
 	minutes := now.Sub(*h.lastAuth).Minutes()
 
-	h.logger.Infof("checked reauth minutes", minutes)
+	h.logger.Info("checked reauth minutes", minutes)
 
 	return minutes >= authValidMinutes
 }
