@@ -126,10 +126,11 @@ import (
 
 func main() {
 	// NewClient() returns each time a new instance which is requesting helheims auth() endpoint
-	// helheimClient, err := helheim_go.NewClient("YOUR_API_KEY", false, nil)
+	// helheimClient, err := helheim_go.NewClient("YOUR_API_KEY", false, false, nil)
 
 	// Provide() is creating one helheim client instance and returning the same authenticated instance on every Provide() call
-	helheimClient, err := helheim_go.ProvideClient("YOUR_API_KEY", false, true, nil)
+	// withAutoReAuth can be set to false actually because the helheim lib itself has re-auth logic in place.
+	helheimClient, err := helheim_go.ProvideClient("YOUR_API_KEY", false, false, nil)
 
 	if err != nil {
 		log.Println(err)
