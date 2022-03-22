@@ -14,6 +14,12 @@ type AuthResponse struct {
 	Response string `json:"response"`
 }
 
+type VersionResponse struct {
+	ErrorAwareResponse
+	SessionAwareResponse
+	Version string `json:"version"`
+}
+
 type BalanceResponse struct {
 	ErrorAwareResponse
 	SessionAwareResponse

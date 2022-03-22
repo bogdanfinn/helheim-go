@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -18,6 +19,15 @@ func main() {
 	}
 
 	log.Println("helheim client initiated")
+
+	versionResponse, err := helheimClient.Version()
+
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	log.Println(fmt.Sprintf("you are using helheim version %s", versionResponse.Version))
 
 	options := helheim_go.CreateSessionOptions{
 		Browser: helheim_go.BrowserOptions{

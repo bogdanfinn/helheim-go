@@ -9,6 +9,7 @@ type Client interface {
 	NewSession(options CreateSessionOptions) (Session, error)
 	DeleteSession(sessionId int) error
 	GetBalance() (*BalanceResponse, error)
+	Version() (*VersionResponse, error)
 	GetHelheim() Helheim
 	NewHttpClient(sessionOptions CreateSessionOptions, options ...HttpClientOption) (HttpClient, error)
 	SetLogger(logger Logger)
@@ -101,6 +102,10 @@ func (c *client) GetBalance() (*BalanceResponse, error) {
 func (c *client) SetLogger(logger Logger) {
 	c.logger = logger
 	c.helheim.SetLogger(logger)
+}
+
+func (c *client) Version() (*VersionResponse, error) {
+	return c.helheim.Version()
 }
 
 func (c *client) GetHelheim() Helheim {
