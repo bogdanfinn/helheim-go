@@ -189,7 +189,22 @@ func (h *helheim) Request(sessionId int, options RequestOptions) (*RequestRespon
 		return nil, err
 	}
 
-	optionsString, err := json.Marshal(options)
+	ops := options.Options
+	bodyValue, ok := ops["body"]
+
+	if !ok || bodyValue == "" {
+		if options.Body != "" {
+			ops["body"] = options.Body
+		}
+	}
+
+	requestOptionsInternal := requestOptionsInternal{
+		Method:  options.Method,
+		Url:     options.Url,
+		Options: ops,
+	}
+
+	optionsString, err := json.Marshal(requestOptionsInternal)
 
 	if err != nil {
 		return nil, err
