@@ -3,7 +3,6 @@ package helheim_go
 /*
 char *auth(char apiKey[], int discover);
 char *getBalance();
-char *helheimVersion();
 char *bifrost(int sessionID, char libraryPath[]);
 char *wokou(int sessionID, char browser[]);
 
@@ -36,7 +35,6 @@ const authValidMinutes = 30
 type Helheim interface {
 	Auth() (*AuthResponse, error)
 	GetBalance() (*BalanceResponse, error)
-	Version() (*VersionResponse, error)
 	CreateSession(options CreateSessionOptions) (*SessionResponse, error)
 	DeleteSession(sessionId int) (*SessionDeleteResponse, error)
 	Debug(sessionId int, state int) (interface{}, error)
@@ -151,20 +149,6 @@ func (h *helheim) GetBalance() (*BalanceResponse, error) {
 	err = h.handleResponse(jsonPayload, &balanceResponse)
 
 	return &balanceResponse, err
-}
-
-func (h *helheim) Version() (*VersionResponse, error) {
-	err := h.reAuth()
-	if err != nil {
-		return nil, err
-	}
-
-	jsonPayload := C.GoString(C.helheimVersion())
-
-	versionResponse := VersionResponse{}
-	err = h.handleResponse(jsonPayload, &versionResponse)
-
-	return &versionResponse, err
 }
 
 func (h *helheim) DeleteSession(sessionId int) (*SessionDeleteResponse, error) {
