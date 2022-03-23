@@ -46,9 +46,6 @@ apt-get upgrade
 
 apt-get install python3 python3-dev python3-pip
 
-# Download Go 1.15 and install it to /usr/local/go
-curl -s https://storage.googleapis.com/golang/go1.15.linux-amd64.tar.gz| tar -v -C /usr/local -xz
-
 python3 -m pip install -U --force-reinstall pip
 pip install -U helheim-0.8.2-py38-linux.x86_64.tar.gz
 ```
