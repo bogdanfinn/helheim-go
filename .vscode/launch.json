@@ -1,0 +1,22 @@
+{
+    // Verwendet IntelliSense zum Ermitteln möglicher Attribute.
+    // Zeigen Sie auf vorhandene Attribute, um die zugehörigen Beschreibungen anzuzeigen.
+    // Weitere Informationen finden Sie unter https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Package",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${fileDirname}",
+            "showLog": false,
+            "env": {
+                "CGO_LDFLAGS": "-Wl,-rpath /Library/Frameworks/Python.framework/Versions/3.8 -L/Library/Frameworks/Python.framework/Versions/3.8/lib -lpython3.8 -lhelheim_cffi",
+                "CGO_CFLAGS": "-I/Library/Frameworks/Python.framework/Versions/3.8/include/python3.8",
+                "DYLD_LIBRARY_PATH":"/Library/Frameworks/Python.framework/Versions/3.8/lib" //only when you dont have the cffi lib next to the application - macos
+                // "LD_LIBRARY_PATH":"/Library/Frameworks/Python.framework/Versions/3.8/lib" //only when you dont have the cffi lib next to the application - linux
+            }
+        }
+    ]
+}

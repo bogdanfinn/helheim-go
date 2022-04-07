@@ -7,6 +7,8 @@ This go library was created with
 * go 1.17
 * helheim 0.8.6 py38
 
+Do not use `go get ...` to install this module. Just add `"github.com/bogdanfinn/helheim-go"` to your `go.mod`file and run `go mod tidy`.
+
 ## Warning
 
 `char *helheimVersion();` is not in the default cffi lib you build out of the examples. Please check helheim discord
@@ -107,8 +109,20 @@ will build the example application located in `./example/main.go`
 
 **You have to adjust the different paths according to your setup/system in `build.sh`**
 
-If you run your go project inside the Goland IDE check the branch `local-debug` which contains the build flags in the
+### GoLand
+
+If you run your go project inside the Goland IDE check out the branch `local-debug` which contains the build flags in the
 code to be parsed from the IDE when you work with IDE Run Configurations.
+
+![GoLand Run Configuration](docs/goland-run-config.png "GoLand Run Configuration")
+Always be aware of the arguments you have to provide for your system based on the fact where your helheim cffi lib is located as explained in `build.sh`
+
+### VSCode
+In `.vscode` is a launch configuration for vscode with the paths of `build.sh`. 
+
+### Debugging
+Currently I can't get the example app successfully running with a debugger. It starts and i can set breakpoints (before the first helheim function call) and everything works fine. When i first call a helheim function while debugging the application the debugger and the app are silently crashing.
+
 
 ## Quick Usage Example
 

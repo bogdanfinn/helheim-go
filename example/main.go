@@ -54,14 +54,14 @@ func main() {
 	}
 
 	/*
-	exampleForPost := helheim_go.RequestOptions{
-		Method: http.MethodPost,
-		Body:   `{"key":"myBodyPayload"}`, //either set body here
-		Url:    "https://www.genx.co.nz/iuam/",
-		Options: map[string]string{
-			"body": `{"key":"myBodyPayload"}`, // or set body here.
-		},
-	}
+		exampleForPost := helheim_go.RequestOptions{
+			Method: http.MethodPost,
+			Body:   `{"key":"myBodyPayload"}`, //either set body here
+			Url:    "https://www.genx.co.nz/iuam/",
+			Options: map[string]string{
+				"body": `{"key":"myBodyPayload"}`, // or set body here.
+			},
+		}
 	*/
 
 	resp, err := session.Request(reqOpts)
