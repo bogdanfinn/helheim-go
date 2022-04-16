@@ -7,7 +7,9 @@ This go library was created with
 * go 1.17
 * helheim 0.8.6 py38
 
-Do not use `go get ...` to install this module. Just add `"github.com/bogdanfinn/helheim-go"` to your `go.mod`file and run `go mod tidy`.
+Do not use `go get ...` to install this module. This will fail due to the missing helheim lib dependency. 
+Just add `github.com/bogdanfinn/helheim-go vX.X.X` where `vX.X.X` specifies the version to your `go.mod`file and run `go mod tidy`.
+You can find the versions in the repository tags.
 
 ## Warning
 
