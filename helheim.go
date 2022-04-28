@@ -47,6 +47,7 @@ type Helheim interface {
 	DelCookie(sessionId int, cookie string) (interface{}, error)
 	SetKasada(sessionId int, options KasadaOptions) (interface{}, error)
 	SetKasadaHooks(sessionId int, options KasadaHooksOptions) (interface{}, error)
+	SetLogger(logger Logger)
 }
 
 type helheim struct {
@@ -81,7 +82,9 @@ func newHelheim(apiKey string, discover bool, withAutoReAuth bool, logger Logger
 		return nil, fmt.Errorf("could not authenticate against helheim")
 	}
 
-	return h, err
+	logger.Info("initiated helheim")
+
+	return h, nil
 }
 
 func (h *helheim) Auth() (*AuthResponse, error) {
@@ -105,6 +108,7 @@ func (h *helheim) Auth() (*AuthResponse, error) {
 
 	C.free(unsafe.Pointer(apiKey))
 
+	h.logger.Debug("helheim response for Auth: %s", jsonPayload)
 	authResponse := AuthResponse{}
 	err := h.handleResponse(jsonPayload, &authResponse)
 
@@ -131,6 +135,7 @@ func (h *helheim) CreateSession(options CreateSessionOptions) (*SessionResponse,
 
 	C.free(unsafe.Pointer(opt))
 
+	h.logger.Debug("helheim response for CreateSession: %s", jsonPayload)
 	sessionResponse := SessionResponse{}
 	err = h.handleResponse(jsonPayload, &sessionResponse)
 
@@ -145,6 +150,7 @@ func (h *helheim) GetBalance() (*BalanceResponse, error) {
 
 	jsonPayload := C.GoString(C.getBalance())
 
+	h.logger.Debug("helheim response for GetBalance: %s", jsonPayload)
 	balanceResponse := BalanceResponse{}
 	err = h.handleResponse(jsonPayload, &balanceResponse)
 
@@ -161,6 +167,7 @@ func (h *helheim) DeleteSession(sessionId int) (*SessionDeleteResponse, error) {
 
 	jsonPayload := C.GoString(C.deleteSession(sId))
 
+	h.logger.Debug("helheim response for DeleteSession: %s", jsonPayload)
 	deleteResponse := SessionDeleteResponse{}
 	err = h.handleResponse(jsonPayload, &deleteResponse)
 
@@ -202,6 +209,7 @@ func (h *helheim) Request(sessionId int, options RequestOptions) (*RequestRespon
 
 	requestResponse := RequestResponse{}
 
+	h.logger.Debug("helheim response for Request: %s", jsonPayload)
 	err = h.handleResponse(jsonPayload, &requestResponse)
 
 	return &requestResponse, err
@@ -218,6 +226,7 @@ func (h *helheim) Bifrost(sessionId int, libraryPath string) (interface{}, error
 
 	jsonPayload := C.GoString(C.bifrost(sId, lp))
 
+	h.logger.Debug("helheim response for Bifrost: %s", jsonPayload)
 	C.free(unsafe.Pointer(lp))
 
 	return jsonPayload, nil
@@ -236,6 +245,7 @@ func (h *helheim) Wokou(sessionId int, browser string) (*WokouResponse, error) {
 
 	C.free(unsafe.Pointer(b))
 
+	h.logger.Debug("helheim response for Wokou: %s", jsonPayload)
 	wokouResponse := WokouResponse{}
 	err = h.handleResponse(jsonPayload, &wokouResponse)
 
@@ -255,6 +265,7 @@ func (h *helheim) SetProxy(sessionId int, proxy string) (*SetProxyResponse, erro
 
 	C.free(unsafe.Pointer(p))
 
+	h.logger.Debug("helheim response for SetProxy: %s", jsonPayload)
 	setProxyResponse := SetProxyResponse{}
 	err = h.handleResponse(jsonPayload, &setProxyResponse)
 
@@ -280,6 +291,7 @@ func (h *helheim) SetHeaders(sessionId int, headers map[string]string) (*SetHead
 
 	C.free(unsafe.Pointer(headersParam))
 
+	h.logger.Debug("helheim response for SetHeaders: %s", jsonPayload)
 	setHeadersResponse := SetHeadersResponse{}
 	err = h.handleResponse(jsonPayload, &setHeadersResponse)
 
@@ -297,6 +309,7 @@ func (h *helheim) SetCookie(sessionId int, cookie string) (interface{}, error) {
 
 	jsonPayload := C.GoString(C.setCookie(sId, c))
 
+	h.logger.Debug("helheim response for SetCookie: %s", jsonPayload)
 	C.free(unsafe.Pointer(c))
 
 	return jsonPayload, nil
@@ -312,6 +325,7 @@ func (h *helheim) DelCookie(sessionId int, cookie string) (interface{}, error) {
 	sId := C.int(sessionId)
 
 	jsonPayload := C.GoString(C.delCookie(sId, c))
+	h.logger.Debug("helheim response for DelCookie: %s", jsonPayload)
 
 	C.free(unsafe.Pointer(c))
 
@@ -328,6 +342,7 @@ func (h *helheim) Debug(sessionId int, state int) (interface{}, error) {
 	stateInt := C.int(state)
 
 	jsonPayload := C.GoString(C.debug(sId, stateInt))
+	h.logger.Debug("helheim response for Debug: %s", jsonPayload)
 
 	return jsonPayload, nil
 }
@@ -348,6 +363,7 @@ func (h *helheim) SetKasada(sessionId int, options KasadaOptions) (interface{}, 
 	sId := C.int(sessionId)
 
 	jsonPayload := C.GoString(C.setKasada(sId, opt))
+	h.logger.Debug("helheim response for SetKasada: %s", jsonPayload)
 
 	C.free(unsafe.Pointer(opt))
 
@@ -372,8 +388,13 @@ func (h *helheim) SetKasadaHooks(sessionId int, options KasadaHooksOptions) (int
 	jsonPayload := C.GoString(C.setKasadaHooks(sId, opt))
 
 	C.free(unsafe.Pointer(opt))
+	h.logger.Debug("helheim response for SetKasadaHooks: %s", jsonPayload)
 
 	return jsonPayload, err
+}
+
+func (h *helheim) SetLogger(logger Logger) {
+	h.logger = logger
 }
 
 func (h *helheim) handleResponse(jsonPayload string, ret interface{}) error {
@@ -381,16 +402,28 @@ func (h *helheim) handleResponse(jsonPayload string, ret interface{}) error {
 	err := json.Unmarshal([]byte(jsonPayload), &errorResponse)
 
 	if err != nil {
-		return err
+		e := fmt.Errorf("could not unmarshall helheim response to error aware response: %w", err)
+		h.logger.Error("error while unmarshalling helheim response: %w", e)
+
+		return e
 	}
 
 	if errorResponse.Error {
-		return fmt.Errorf("error: %s", errorResponse.ErrorMsg)
+		e := fmt.Errorf("helheim error: %s", errorResponse.ErrorMsg)
+		h.logger.Error("error received in helheim response: %w", e)
+
+		return e
 	}
 
 	err = json.Unmarshal([]byte(jsonPayload), ret)
 
-	return err
+	if err != nil {
+		e := fmt.Errorf("could not unmarshall helheim response to response type: %w", err)
+		h.logger.Error("error while unmarshalling helheim response: %w", e)
+		return e
+	}
+
+	return nil
 }
 
 func (h *helheim) needReAuth() bool {
@@ -402,13 +435,18 @@ func (h *helheim) needReAuth() bool {
 
 	minutes := now.Sub(*h.lastAuth).Minutes()
 
-	h.logger.Info("checked reauth minutes", minutes)
+	h.logger.Info("%d minutes since last authentication", minutes)
 
-	return minutes >= authValidMinutes
+	needsReAuth := minutes >= authValidMinutes
+
+	h.logger.Debug("%d minutes since last auth. need re auth: %v", minutes, needsReAuth)
+
+	return needsReAuth
 }
 
 func (h *helheim) reAuth() error {
 	if !h.withAutoReAuth {
+		h.logger.Debug("auto re auth not enabled. skipping")
 		return nil
 	}
 
@@ -418,5 +456,10 @@ func (h *helheim) reAuth() error {
 
 	_, err := h.Auth()
 
-	return err
+	if err != nil {
+		h.logger.Error("failed to authenticate helheim: %w", err)
+		return err
+	}
+
+	return nil
 }

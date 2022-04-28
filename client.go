@@ -9,6 +9,7 @@ type Client interface {
 	NewSession(options CreateSessionOptions) (Session, error)
 	GetBalance() (*BalanceResponse, error)
 	GetHelheim() Helheim
+	SetLogger(logger Logger)
 }
 
 type client struct {
@@ -48,8 +49,11 @@ func NewClient(apiKey string, discover bool, withAutoReAuth bool, logger Logger)
 	h, err := newHelheim(apiKey, discover, withAutoReAuth, logger)
 
 	if err != nil {
+		logger.Error("failed to create helheim client: %w", err)
 		return nil, err
 	}
+
+	logger.Info("created new helheim client")
 
 	return &client{
 		logger:  logger,
@@ -58,11 +62,32 @@ func NewClient(apiKey string, discover bool, withAutoReAuth bool, logger Logger)
 }
 
 func (c *client) NewSession(options CreateSessionOptions) (Session, error) {
-	return newSession(c.logger, c.helheim, options)
+	s, err := newSession(c.logger, c.helheim, options)
+
+	if err != nil {
+		c.logger.Error("failed to create session: %w", err)
+		return nil, err
+	}
+
+	c.logger.Info("created new session with id: %d", s.GetSessionId())
+
+	return s, nil
 }
 
 func (c *client) GetBalance() (*BalanceResponse, error) {
-	return c.helheim.GetBalance()
+	b, err := c.helheim.GetBalance()
+
+	if err != nil {
+		c.logger.Error("failed to retrieve balance: %w", err)
+		return nil, err
+	}
+
+	return b, nil
+}
+
+func (c *client) SetLogger(logger Logger) {
+	c.logger = logger
+	c.helheim.SetLogger(logger)
 }
 
 func (c *client) GetHelheim() Helheim {
@@ -73,6 +98,7 @@ func (c *client) DeleteSession(sessionId int) error {
 	resp, err := c.helheim.DeleteSession(sessionId)
 
 	if err != nil {
+		c.logger.Error("failed to delete session: %w", err)
 		return err
 	}
 
