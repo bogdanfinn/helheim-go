@@ -5,7 +5,7 @@
 This go library was created with
 
 * go 1.17
-* helheim 0.8.6 py38
+* helheim 0.8.7 py38
 
 Do not use `go get ...` to install this module. This will fail due to the missing helheim lib dependency. 
 Just add `github.com/bogdanfinn/helheim-go vX.X.X` where `vX.X.X` specifies the version to your `go.mod`file and run `go mod tidy`.
@@ -51,19 +51,19 @@ apt-get upgrade
 apt-get install python3 python3-dev python3-pip
 
 python3 -m pip install -U --force-reinstall pip
-pip install -U helheim-0.8.2-py38-linux.x86_64.tar.gz
+pip install -U helheim-0.8.7-py38-linux.x86_64.tar.gz
 ```
 
 ## Build
 
 Build the cffi library. It is very important that you download from discord the tar.gz file with the **correct** version
 and for your system you are building your go app. In my case with the above installed python version on MacOS it
-is `helheim-0.8.2-py38-darwin.x86_64.tar.gz`
-On Ubuntu (amd64) it is `helheim-0.8.2-py38-linux.x86_64.tar.gz`. On Windows (amd64) it
-is `helheim-0.8.6-py38-windows.x86_64.tar.gz`.
+is `helheim-0.8.7-py38-darwin.x86_64.tar.gz`
+On Ubuntu (amd64) it is `helheim-0.8.7-py38-linux.x86_64.tar.gz`. On Windows (amd64) it
+is `helheim-0.8.7-py38-windows.x86_64.tar.gz`.
 
 Install helheim by running `python setup.py install` in the projects root directory or
-just `pip install -U helheim-0.8.2-py38-darwin.x86_64.tar.gz` (with the correct package name)
+just `pip install -U helheim-0.8.7-py38-darwin.x86_64.tar.gz` (with the correct package name)
 
 Now build the cffi library as described in python example 3. Navigate inside the directory and run:  
 `python build-cffi.py`. In my case `python3 build-cffi.py`
