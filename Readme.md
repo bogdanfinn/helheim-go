@@ -5,7 +5,7 @@
 This go library was created with
 
 * go 1.17
-* helheim 0.8.8 py38
+* helheim 0.8.9 py38
 
 Do not use `go get ...` to install this module. This will fail due to the missing helheim lib dependency. 
 Just add `github.com/bogdanfinn/helheim-go vX.X.X` where `vX.X.X` specifies the version to your `go.mod`file and run `go mod tidy`.
@@ -24,6 +24,10 @@ lib.
 
 Install Python in a version which is compatible with helheim. I used
 this: https://www.python.org/ftp/python/3.8.5/python-3.8.5-macosx10.9.pkg
+
+**Important**
+
+Please make sure you installed python on mac from python.org. Had a couple of messages with some python errors during runtime which all were resolved after installing python from python.org instead of other sources.
 
 ## Windows
 
