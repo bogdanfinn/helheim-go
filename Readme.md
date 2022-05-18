@@ -195,6 +195,72 @@ func main() {
 
 For more examples check `./example/main.go`
 
+## net/http Client Example
+After creating your helheim client you are able to call `helheimClient.NewHttpClient(options, helheimClientOptions...)` on it to receive an instance
+of a struct which implements an interface which is more or less compatible with golangs net/http client.
+
+With this solution you do not have to alter the code where you use a golang net/http Client in order to implement helheim logic.
+Your basic code could look similar to this (error handling removed):
+
+```go
+req, _ := http.NewRequest(http.MethodGet, "https://www.genx.co.nz/iuam/", nil)
+
+resp, _ := httpCLient.Do(req)
+```
+
+In order to use helheim with an minimum amount of effort you can create a httpClient like this:
+```go
+    package main
+
+import (
+	helheim_go "github.com/bogdanfinn/helheim-go"
+	"log"
+	"net/http"
+)
+
+func main() {
+	// NewClient() returns each time a new instance which is requesting helheims auth() endpoint
+	// helheimClient, err := helheim_go.NewClient("YOUR_API_KEY", false, false, nil)
+
+	// Provide() is creating one helheim client instance and returning the same authenticated instance on every Provide() call
+	// withAutoReAuth can be set to false actually because the helheim lib itself has re-auth logic in place.
+	helheimClient, err := helheim_go.ProvideClient("YOUR_API_KEY", false, false, nil)
+
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	log.Println("helheim client initiated")
+
+	options := helheim_go.CreateSessionOptions{
+		Browser: helheim_go.BrowserOptions{
+			Browser:  "chrome",
+			Mobile:   false,
+			Platform: "windows",
+		},
+		Captcha: helheim_go.CaptchaOptions{
+			Provider: "vanaheim",
+		},
+	}
+
+	helheimClientOptions := []helheim_go.HttpClientOption{
+		helheim_go.WithWokou("chrome"),
+		// add here other options like proxy, debug, or bifrost
+		// helheim_go.WithDebug(),
+		// helheim_go.WithBifrost("path/to/lib"),
+		// helheim_go.WithProxyUrl("http://username:password@host:port"),
+	}
+
+	httpCLient, err := helheimClient.NewHttpClient(options, helheimClientOptions...)
+	
+	
+	// this httpClient can then be used like a net/http Client
+}
+```
+
+For the full http client example check `./example_http/main.go`
+
 ### C Types in Go cheat sheet
 
 https://gist.github.com/zchee/b9c99695463d8902cd33

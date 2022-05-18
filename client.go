@@ -7,8 +7,10 @@ import (
 
 type Client interface {
 	NewSession(options CreateSessionOptions) (Session, error)
+	DeleteSession(sessionId int) error
 	GetBalance() (*BalanceResponse, error)
 	GetHelheim() Helheim
+	NewHttpClient(sessionOptions CreateSessionOptions, options ...HttpClientOption) (HttpClient, error)
 	SetLogger(logger Logger)
 }
 
@@ -59,6 +61,17 @@ func NewClient(apiKey string, discover bool, withAutoReAuth bool, logger Logger)
 		logger:  logger,
 		helheim: h,
 	}, nil
+}
+
+func (c *client) NewHttpClient(sessionOptions CreateSessionOptions, options ...HttpClientOption) (HttpClient, error) {
+	s, err := c.NewSession(sessionOptions)
+
+	if err != nil {
+		c.logger.Error("failed to create default session for helheim http client: %w", err)
+		return nil, err
+	}
+
+	return newHttpClient(c.logger, s, options...), nil
 }
 
 func (c *client) NewSession(options CreateSessionOptions) (Session, error) {
