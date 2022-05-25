@@ -134,6 +134,8 @@ func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
 		}
 	}
 
+	opts := make(map[string]string, 0)
+
 	var body string
 	if req.Body != nil {
 		bodyBytes, err := ioutil.ReadAll(req.Body)
@@ -143,13 +145,18 @@ func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
 			return nil, err
 		}
 		body = string(bodyBytes)
+
+		if req.Header.Get("Content-Type") == "application/json" {
+			opts["json"] = body
+		} else {
+			opts["data"] = body
+		}
 	}
 
 	reqOpts := RequestOptions{
 		Method:  req.Method,
-		Body:    body,
 		Url:     req.URL.String(),
-		Options: make(map[string]string, 0),
+		Options: opts,
 	}
 
 	resp, err := c.session.Request(reqOpts)

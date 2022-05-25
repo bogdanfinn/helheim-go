@@ -55,7 +55,6 @@ apt-get upgrade
 apt-get install python3 python3-dev python3-pip
 
 python3 -m pip install -U --force-reinstall pip
-pip install -U helheim-0.8.7-py38-linux.x86_64.tar.gz
 ```
 
 ## Build
@@ -66,8 +65,8 @@ is `helheim-0.8.7-py38-darwin.x86_64.tar.gz`
 On Ubuntu (amd64) it is `helheim-0.8.7-py38-linux.x86_64.tar.gz`. On Windows (amd64) it
 is `helheim-0.8.7-py38-windows.x86_64.tar.gz`.
 
-Install helheim by running `python setup.py install` in the projects root directory or
-just `pip install -U helheim-0.8.7-py38-darwin.x86_64.tar.gz` (with the correct package name)
+Install helheim by running `python setup.py install` in the projects root directory. This will install all the required dependencies for helheim.
+After installation of dependencies you are able to install helheim / make updates by just running `pip install -U helheim-0.8.7-py38-darwin.x86_64.tar.gz` (with the correct package name)
 
 Now build the cffi library as described in python example 3. Navigate inside the directory and run:  
 `python build-cffi.py`. In my case `python3 build-cffi.py`

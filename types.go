@@ -97,7 +97,6 @@ type CaptchaOptions struct {
 type RequestOptions struct {
 	Method  string            `json:"method"`
 	Url     string            `json:"url"`
-	Body    string            `json:"body"`
 	Options map[string]string `json:"options"`
 }
 

@@ -181,13 +181,6 @@ func (h *helheim) Request(sessionId int, options RequestOptions) (*RequestRespon
 	}
 
 	ops := options.Options
-	bodyValue, ok := ops["body"]
-
-	if !ok || bodyValue == "" {
-		if options.Body != "" {
-			ops["body"] = options.Body
-		}
-	}
 
 	requestOptionsInternal := requestOptionsInternal{
 		Method:  options.Method,

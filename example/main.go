@@ -47,22 +47,23 @@ func main() {
 	log.Println("balance response:")
 	log.Println(balance)
 
+	//wokouResp, err = session.Wokou("chrome")
+
 	reqOpts := helheim_go.RequestOptions{
 		Method:  http.MethodGet,
 		Url:     "https://www.genx.co.nz/iuam/",
 		Options: make(map[string]string),
 	}
 
-	/*
-		exampleForPost := helheim_go.RequestOptions{
-			Method: http.MethodPost,
-			Body:   `{"key":"myBodyPayload"}`, //either set body here
-			Url:    "https://www.genx.co.nz/iuam/",
-			Options: map[string]string{
-				"body": `{"key":"myBodyPayload"}`, // or set body here.
-			},
-		}
-	*/
+	//
+	//exampleForPost := helheim_go.RequestOptions{
+	//	Method: http.MethodPost,
+	//	Url:    "https://www.genx.co.nz/iuam/",
+	//	Options: map[string]string{
+	//		"data": `{"key":"myBodyPayload"}`, // set body here depends on your content type.
+	//		"json": `{"key":"myBodyPayload"}`, // or set body here depends on your content type.
+	//	},
+	//}
 
 	resp, err := session.Request(reqOpts)
 	if err != nil {
