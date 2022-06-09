@@ -32,9 +32,8 @@ func main() {
 
 	helheimClientOptions := []helheim_go.HttpClientOption{
 		helheim_go.WithWokou("chrome"),
-		// add here other options like proxy, debug, or bifrost
+		// add here other options like proxy or debug
 		// helheim_go.WithDebug(),
-		// helheim_go.WithBifrost("path/to/lib"),
 		// helheim_go.WithProxyUrl("http://username:password@host:port"),
 	}
 

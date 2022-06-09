@@ -10,7 +10,6 @@ type Session interface {
 	Delete() error
 	Debug(state int) (interface{}, error)
 	Request(options RequestOptions) (*RequestResponse, error)
-	Bifrost(libraryPath string) (interface{}, error)
 	Wokou(browser string) (*WokouResponse, error)
 	SetProxy(proxy string) (*SetProxyResponse, error)
 	SetHeaders(headers map[string]string) (*SetHeadersResponse, error)
@@ -68,10 +67,6 @@ func (s *session) Request(options RequestOptions) (*RequestResponse, error) {
 	s.cookies = append(s.cookies, resp.Session.Cookies...)
 
 	return resp, nil
-}
-
-func (s *session) Bifrost(libraryPath string) (interface{}, error) {
-	return s.helheim.Bifrost(s.GetSessionId(), libraryPath)
 }
 
 func (s *session) Wokou(browser string) (*WokouResponse, error) {

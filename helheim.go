@@ -39,7 +39,6 @@ type Helheim interface {
 	DeleteSession(sessionId int) (*SessionDeleteResponse, error)
 	Debug(sessionId int, state int) (interface{}, error)
 	Request(sessionId int, options RequestOptions) (*RequestResponse, error)
-	Bifrost(sessionId int, libraryPath string) (interface{}, error)
 	Wokou(sessionId int, browser string) (*WokouResponse, error)
 	SetProxy(sessionId int, proxy string) (*SetProxyResponse, error)
 	SetHeaders(sessionId int, headers map[string]string) (*SetHeadersResponse, error)
@@ -206,23 +205,6 @@ func (h *helheim) Request(sessionId int, options RequestOptions) (*RequestRespon
 	err = h.handleResponse(jsonPayload, &requestResponse)
 
 	return &requestResponse, err
-}
-
-func (h *helheim) Bifrost(sessionId int, libraryPath string) (interface{}, error) {
-	err := h.reAuth()
-	if err != nil {
-		return nil, err
-	}
-
-	lp := C.CString(libraryPath)
-	sId := C.int(sessionId)
-
-	jsonPayload := C.GoString(C.bifrost(sId, lp))
-
-	h.logger.Debug("helheim response for Bifrost: %s", jsonPayload)
-	C.free(unsafe.Pointer(lp))
-
-	return jsonPayload, nil
 }
 
 func (h *helheim) Wokou(sessionId int, browser string) (*WokouResponse, error) {

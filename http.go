@@ -72,15 +72,6 @@ func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
 		}
 	}
 
-	if c.config.bifrostLibraryPath != "" {
-		_, err := c.session.Bifrost(c.config.bifrostLibraryPath)
-
-		if err != nil {
-			c.logger.Error("failed to set bifrost library path on http client default session: %w", err)
-			return nil, err
-		}
-	}
-
 	if c.config.wokouBrowser != "" {
 		wokouResp, err := c.session.Wokou(c.config.wokouBrowser)
 

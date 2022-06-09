@@ -11,6 +11,12 @@ Do not use `go get ...` to install this module. This will fail due to the missin
 Just add `github.com/bogdanfinn/helheim-go vX.X.X` where `vX.X.X` specifies the version to your `go.mod`file and run `go mod tidy`.
 You can find the versions in the repository tags. You have to use the lib somewhere in your code. When the dependency is unused `go mod tidy` will remove it from your go.mod file.
 
+## Bifrost
+
+It is not possible to use Bifrost with this library. This is due to the fact, that it is not possible to load a go library via CFFI into a go application. 
+You end up with two go runtimes colliding. Bifrost is (partly?) written in go.
+If you want to use a TLS Client you have to implement your own TLS Client and pass the cookies from the helheim session to your client.
+
 ## Warning
 
 `char *helheimVersion();` is not in the default cffi lib you build out of the examples. Please check helheim discord
@@ -259,6 +265,8 @@ func main() {
 ```
 
 For the full http client example check `./example_http/main.go`
+
+### Common Issues
 
 ### C Types in Go cheat sheet
 
