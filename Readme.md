@@ -4,8 +4,8 @@
 
 This go library was created with
 
-* go 1.17
-* helheim 0.8.9 py38
+* go 1.18
+* helheim 0.9.0 py38
 
 Do not use `go get ...` to install this module. This will fail due to the missing helheim lib dependency. 
 Just add `github.com/bogdanfinn/helheim-go vX.X.X` where `vX.X.X` specifies the version to your `go.mod`file and run `go mod tidy`.
@@ -253,7 +253,6 @@ func main() {
 		helheim_go.WithWokou("chrome"),
 		// add here other options like proxy, debug, or bifrost
 		// helheim_go.WithDebug(),
-		// helheim_go.WithBifrost("path/to/lib"),
 		// helheim_go.WithProxyUrl("http://username:password@host:port"),
 	}
 
