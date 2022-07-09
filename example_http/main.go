@@ -1,10 +1,11 @@
 package main
 
 import (
-	helheim_go "github.com/bogdanfinn/helheim-go"
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	helheim_go "github.com/bogdanfinn/helheim-go"
 )
 
 const YourApiKey = "INSERT_HERE"
@@ -52,6 +53,16 @@ func main() {
 		return
 	}
 
+	// you currently need to use a UA of chrome 100+ according to venom
+	for key, value := range map[string]string{
+		"User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36",
+		"Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+		"Accept-Language": "en-US,en;q=0.9",
+		"Accept-Encoding": "gzip, deflate, br",
+	} {
+		req.Header.Set(key, value)
+	}
+
 	resp, err := httpCLient.Do(req)
 	if err != nil {
 		log.Println(err)
@@ -70,7 +81,7 @@ func main() {
 	}
 
 	log.Println("request response:")
-	log.Println(bodyResponse)
+	log.Println(string(bodyResponse))
 
 	log.Println("response header:")
 	log.Println(resp.Header)
