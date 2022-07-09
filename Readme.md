@@ -15,7 +15,7 @@ You can find the versions in the repository tags. You have to use the lib somewh
 
 It is not possible to use Bifrost with this library. This is due to the fact, that it is not possible to load a go library via CFFI into a go application. 
 You end up with two go runtimes colliding. Bifrost is (partly?) written in go.
-If you want to use a TLS Client you have to implement your own TLS Client and pass the cookies from the helheim session to your client.
+If you want to use a TLS Client you have to implement your own TLS Client and pass the cookies from the helheim session to your client or wait until I implemented a open source TLS Client.
 
 ## Warning
 
@@ -213,7 +213,7 @@ req, _ := http.NewRequest(http.MethodGet, "https://www.genx.co.nz/iuam/", nil)
 resp, _ := httpCLient.Do(req)
 ```
 
-In order to use helheim with an minimum amount of effort you can create a httpClient like this:
+In order to use helheim with a minimum amount of effort you can create a httpClient like this:
 ```go
     package main
 
@@ -251,7 +251,7 @@ func main() {
 
 	helheimClientOptions := []helheim_go.HttpClientOption{
 		helheim_go.WithWokou("chrome"),
-		// add here other options like proxy, debug, or bifrost
+		// add here other options like proxy or debug
 		// helheim_go.WithDebug(),
 		// helheim_go.WithProxyUrl("http://username:password@host:port"),
 	}
