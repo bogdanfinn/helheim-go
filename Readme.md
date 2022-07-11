@@ -5,7 +5,7 @@
 This go library was created / tested with
 
 * go 1.18
-* helheim 0.9.1 py38
+* helheim 0.9.2 py38
 
 Do not use `go get ...` to install this module. This will fail due to the missing helheim lib dependency. 
 Just add `github.com/bogdanfinn/helheim-go vX.X.X` where `vX.X.X` specifies the version to your `go.mod`file and run `go mod tidy`.
@@ -15,7 +15,7 @@ You can find the versions in the repository tags. You have to use the lib somewh
 
 It is not possible to use Bifrost with this library. This is due to the fact, that it is not possible to load a go library via CFFI into a go application. 
 You end up with two go runtimes colliding. Bifrost is (partly?) written in go.
-If you want to use a TLS Client you have to implement your own TLS Client and pass the cookies from the helheim session to your client or wait until I implemented a open source TLS Client.
+If you want to use a TLS Client you have to implement your own TLS Client and pass the cookies from the helheim session to your client or use this https://github.com/bogdanfinn/tls-client.
 
 ## Warning
 
