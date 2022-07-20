@@ -7,9 +7,15 @@ This go library was created / tested with
 * go 1.18
 * helheim 0.9.2 py38
 
-Do not use `go get ...` to install this module. This will fail due to the missing helheim lib dependency. 
-Just add `github.com/bogdanfinn/helheim-go vX.X.X` where `vX.X.X` specifies the version to your `go.mod`file and run `go mod tidy`.
-You can find the versions in the repository tags. You have to use the lib somewhere in your code. When the dependency is unused `go mod tidy` will remove it from your go.mod file.
+
+### Installation
+
+```go
+go get -u github.com/bogdanfinn/helheim-go
+
+// or specific version:
+// go get -u github.com/bogdanfinn/helheim-go@v0.2.2
+```
 
 ## Bifrost
 
