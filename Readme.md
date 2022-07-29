@@ -5,7 +5,7 @@
 This go library was created / tested with
 
 * go 1.18
-* helheim 0.9.2 py38
+* helheim 0.9.4 py38
 
 
 ### Installation
