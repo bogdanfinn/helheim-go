@@ -13,6 +13,8 @@ type HttpClient interface {
 	Get(url string) (resp *http.Response, err error)
 	Head(url string) (resp *http.Response, err error)
 	Post(url, contentType string, body io.Reader) (resp *http.Response, err error)
+	SetCookie(cookie SessionCookie) error
+	DeleteCookie(cookieName string) error
 	GetSessionHeaders() map[string]string
 	GetSessionCookies() []SessionCookie
 }
@@ -60,6 +62,18 @@ func (c *httpClient) Post(url, contentType string, body io.Reader) (resp *http.R
 	req.Header.Set("Content-Type", contentType)
 
 	return c.Do(req)
+}
+
+func (c *httpClient) SetCookie(cookie SessionCookie) error {
+	_, err := c.session.SetCookie(cookie)
+
+	return err
+}
+
+func (c *httpClient) DeleteCookie(cookieName string) error {
+	_, err := c.session.DelCookie(cookieName)
+
+	return err
 }
 
 func (c *httpClient) Do(req *http.Request) (*http.Response, error) {

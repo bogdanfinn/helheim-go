@@ -66,6 +66,23 @@ func main() {
 
 	//wokouResp, err = session.Wokou("chrome")
 
+	cookie := helheim_go.SessionCookie{
+		Name:  "myTestCookie",
+		Value: "myTestValue",
+		//	Domain:  "",
+		//	Path:    "",
+		//	Expires: 0,
+	}
+
+	setCookieResp, err := session.SetCookie(cookie)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	log.Println("set cookie response:")
+	log.Println(setCookieResp)
+
 	reqOpts := helheim_go.RequestOptions{
 		Method:  http.MethodGet,
 		Url:     "https://www.genx.co.nz/iuam/",
@@ -93,6 +110,21 @@ func main() {
 
 	log.Println("request response:")
 	log.Println(resp)
+
+	log.Println("session cookies after request:")
+	log.Println(session.GetCookies())
+
+	delCookieResp, err := session.DelCookie(cookie.Name)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	log.Println("del cookie response:")
+	log.Println(delCookieResp)
+
+	log.Println("session cookies after cookie deletion:")
+	log.Println(session.GetCookies())
 
 	err = session.Delete()
 

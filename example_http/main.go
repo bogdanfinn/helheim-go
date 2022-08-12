@@ -38,7 +38,7 @@ func main() {
 		// helheim_go.WithProxyUrl("http://username:password@host:port"),
 	}
 
-	httpCLient, err := helheimClient.NewHttpClient(options, helheimClientOptions...)
+	httpClient, err := helheimClient.NewHttpClient(options, helheimClientOptions...)
 	if err != nil {
 		log.Println(err)
 		return
@@ -63,7 +63,24 @@ func main() {
 		req.Header.Set(key, value)
 	}
 
-	resp, err := httpCLient.Do(req)
+	cookie := helheim_go.SessionCookie{
+		Name:  "myTestCookie",
+		Value: "myTestValue",
+		//	Domain:  "",
+		//	Path:    "",
+		//	Expires: 0,
+	}
+
+	err = httpClient.SetCookie(cookie)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	log.Println("http client cookies:")
+	log.Println(httpClient.GetSessionCookies())
+
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		log.Println(err)
 		return
@@ -85,4 +102,13 @@ func main() {
 
 	log.Println("response header:")
 	log.Println(resp.Header)
+
+	err = httpClient.DeleteCookie(cookie.Name)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	log.Println("http client cookies after deletion:")
+	log.Println(httpClient.GetSessionCookies())
 }

@@ -13,8 +13,8 @@ type Session interface {
 	Wokou(browser string) (*WokouResponse, error)
 	SetProxy(proxy string) (*SetProxyResponse, error)
 	SetHeaders(headers map[string]string) (*SetHeadersResponse, error)
-	SetCookie(cookie string) (interface{}, error)
-	DelCookie(cookie string) (interface{}, error)
+	SetCookie(cookie SessionCookie) (*ModifyCookiesResponse, error)
+	DelCookie(cookieName string) (*ModifyCookiesResponse, error)
 	SetKasada(options KasadaOptions) (interface{}, error)
 	SetKasadaHooks(options KasadaHooksOptions) (interface{}, error)
 	GetGoHttpCookies() []*http.Cookie
@@ -64,7 +64,7 @@ func (s *session) Request(options RequestOptions) (*RequestResponse, error) {
 		s.headers[key] = value
 	}
 
-	s.cookies = append(s.cookies, resp.Session.Cookies...)
+	s.cookies = resp.Session.Cookies
 
 	return resp, nil
 }
@@ -85,12 +85,28 @@ func (s *session) SetHeaders(headers map[string]string) (*SetHeadersResponse, er
 	return s.helheim.SetHeaders(s.GetSessionId(), headers)
 }
 
-func (s *session) SetCookie(cookie string) (interface{}, error) {
-	return s.helheim.SetCookie(s.GetSessionId(), cookie)
+func (s *session) SetCookie(cookie SessionCookie) (*ModifyCookiesResponse, error) {
+	resp, err := s.helheim.SetCookie(s.GetSessionId(), cookie)
+
+	if err != nil {
+		return nil, err
+	}
+
+	s.cookies = resp.Cookies
+
+	return resp, nil
 }
 
-func (s *session) DelCookie(cookie string) (interface{}, error) {
-	return s.helheim.DelCookie(s.GetSessionId(), cookie)
+func (s *session) DelCookie(cookieName string) (*ModifyCookiesResponse, error) {
+	resp, err := s.helheim.DelCookie(s.GetSessionId(), cookieName)
+
+	if err != nil {
+		return nil, err
+	}
+
+	s.cookies = resp.Cookies
+
+	return resp, nil
 }
 
 func (s *session) Debug(state int) (interface{}, error) {

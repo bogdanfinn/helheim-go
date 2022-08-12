@@ -32,11 +32,17 @@ type SessionResponse struct {
 }
 
 type SessionCookie struct {
-	Name    string `json:"name"`
-	Value   string `json:"value"`
-	Domain  string `json:"domain"`
-	Path    string `json:"path"`
-	Expires int    `json:"expires"`
+	Name    string `json:"name,omitempty"`
+	Value   string `json:"value,omitempty"`
+	Domain  string `json:"domain,omitempty"`
+	Path    string `json:"path,omitempty"`
+	Expires int    `json:"expires,omitempty"`
+}
+
+type ModifyCookiesResponse struct {
+	ErrorAwareResponse
+	SessionAwareResponse
+	Cookies []SessionCookie `json:"cookies"`
 }
 
 type RequestResponse struct {

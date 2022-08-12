@@ -42,8 +42,8 @@ type Helheim interface {
 	Wokou(sessionId int, browser string) (*WokouResponse, error)
 	SetProxy(sessionId int, proxy string) (*SetProxyResponse, error)
 	SetHeaders(sessionId int, headers map[string]string) (*SetHeadersResponse, error)
-	SetCookie(sessionId int, cookie string) (interface{}, error)
-	DelCookie(sessionId int, cookie string) (interface{}, error)
+	SetCookie(sessionId int, cookie SessionCookie) (*ModifyCookiesResponse, error)
+	DelCookie(sessionId int, cookieName string) (*ModifyCookiesResponse, error)
 	SetKasada(sessionId int, options KasadaOptions) (interface{}, error)
 	SetKasadaHooks(sessionId int, options KasadaHooksOptions) (interface{}, error)
 	SetLogger(logger Logger)
@@ -273,13 +273,19 @@ func (h *helheim) SetHeaders(sessionId int, headers map[string]string) (*SetHead
 	return &setHeadersResponse, err
 }
 
-func (h *helheim) SetCookie(sessionId int, cookie string) (interface{}, error) {
+func (h *helheim) SetCookie(sessionId int, cookie SessionCookie) (*ModifyCookiesResponse, error) {
 	err := h.reAuth()
 	if err != nil {
 		return nil, err
 	}
 
-	c := C.CString(cookie)
+	cookiePayload, err := json.Marshal(cookie)
+
+	if err != nil {
+		return nil, err
+	}
+
+	c := C.CString(string(cookiePayload))
 	sId := C.int(sessionId)
 
 	jsonPayload := C.GoString(C.setCookie(sId, c))
@@ -287,16 +293,19 @@ func (h *helheim) SetCookie(sessionId int, cookie string) (interface{}, error) {
 	h.logger.Debug("helheim response for SetCookie: %s", jsonPayload)
 	C.free(unsafe.Pointer(c))
 
-	return jsonPayload, nil
+	setCookiesResponse := ModifyCookiesResponse{}
+	err = h.handleResponse(jsonPayload, &setCookiesResponse)
+
+	return &setCookiesResponse, err
 }
 
-func (h *helheim) DelCookie(sessionId int, cookie string) (interface{}, error) {
+func (h *helheim) DelCookie(sessionId int, cookieName string) (*ModifyCookiesResponse, error) {
 	err := h.reAuth()
 	if err != nil {
 		return nil, err
 	}
 
-	c := C.CString(cookie)
+	c := C.CString(cookieName)
 	sId := C.int(sessionId)
 
 	jsonPayload := C.GoString(C.delCookie(sId, c))
@@ -304,7 +313,10 @@ func (h *helheim) DelCookie(sessionId int, cookie string) (interface{}, error) {
 
 	C.free(unsafe.Pointer(c))
 
-	return jsonPayload, nil
+	setCookiesResponse := ModifyCookiesResponse{}
+	err = h.handleResponse(jsonPayload, &setCookiesResponse)
+
+	return &setCookiesResponse, err
 }
 
 func (h *helheim) Debug(sessionId int, state int) (interface{}, error) {
