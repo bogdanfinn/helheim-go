@@ -30,6 +30,10 @@ server how to add this function and then be able to call `Version()` on the helh
 with `Version()` moved to the branch `with-version-func`. Please use this instead of master when you modified the cffi
 lib.
 
+## Download Images (files) with helheim
+As Venom explained in the discord server you have make adjustments on the template file when building the shared library.
+Please search in the discord server for the exact explanation.
+
 ## Install Python
 
 ### MacOS

@@ -13,6 +13,9 @@ type HttpClient interface {
 	Get(url string) (resp *http.Response, err error)
 	Head(url string) (resp *http.Response, err error)
 	Post(url, contentType string, body io.Reader) (resp *http.Response, err error)
+	CloseIdleConnections() error
+	SetProxy(proxyUrl string)
+	GetProxy() string
 	SetCookie(cookie SessionCookie) error
 	DeleteCookie(cookieName string) error
 	GetSessionHeaders() map[string]string
@@ -20,6 +23,7 @@ type HttpClient interface {
 }
 
 type httpClient struct {
+	closed  bool
 	logger  Logger
 	config  *httpClientConfig
 	session Session
@@ -32,10 +36,25 @@ func newHttpClient(logger Logger, session Session, options ...HttpClientOption) 
 	}
 
 	return &httpClient{
+		closed:  false,
 		logger:  logger,
 		session: session,
 		config:  config,
 	}
+}
+
+func (c *httpClient) SetProxy(proxyUrl string) {
+	c.config.proxyUrl = proxyUrl
+}
+
+func (c *httpClient) GetProxy() string {
+	return c.config.proxyUrl
+}
+
+func (c *httpClient) CloseIdleConnections() error {
+	c.closed = true
+
+	return c.session.Delete()
 }
 
 func (c *httpClient) Get(url string) (resp *http.Response, err error) {
@@ -46,6 +65,7 @@ func (c *httpClient) Get(url string) (resp *http.Response, err error) {
 
 	return c.Do(req)
 }
+
 func (c *httpClient) Head(url string) (resp *http.Response, err error) {
 	req, err := http.NewRequest(http.MethodHead, url, nil)
 	if err != nil {
@@ -77,6 +97,10 @@ func (c *httpClient) DeleteCookie(cookieName string) error {
 }
 
 func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
+	if c.closed {
+		return nil, fmt.Errorf("session already closed manually. please create new client instance")
+	}
+
 	if c.config.debug {
 		_, err := c.session.Debug(1)
 
