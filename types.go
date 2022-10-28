@@ -62,6 +62,7 @@ type RequestResponseResponse struct {
 	Cookies    map[string]string `json:"cookies"`
 	StatusCode int               `json:"status_code"`
 	Body       string            `json:"body"`
+	Content    string            `json:"content"`
 }
 
 type SessionDeleteResponse struct {

@@ -94,12 +94,13 @@ func (h *helheim) Auth() (*AuthResponse, error) {
 		return nil, nil
 	}
 
-	apiKey := C.CString(h.apiKey)
 	discover := 0
 
 	if h.discover {
 		discover = 1
 	}
+
+	apiKey := C.CString(h.apiKey)
 
 	d := C.int(discover)
 	authResp := C.auth(apiKey, d)

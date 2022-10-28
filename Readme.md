@@ -5,7 +5,7 @@
 This go library was created / tested with
 
 * go 1.18
-* helheim 0.9.4 py38
+* helheim 0.9.11 py38
 
 
 ### Installation
@@ -32,7 +32,9 @@ lib.
 
 ## Download Images (files) with helheim
 As Venom explained in the discord server you have make adjustments on the template file when building the shared library.
+Next to the `'body': response.text,` add `'content': base64.b64encode(response.content).decode('utf-8')`. Do not forget to import `base64`. After building the shared library you should have `Content` filled on `RequestResponseResponse` type.
 Please search in the discord server for the exact explanation.
+See example in `example_http_base64_body`. You need to set the `helheim_go.WithBase64Response()` option on the http client. 
 
 ## Install Python
 

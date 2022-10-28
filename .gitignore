@@ -1,3 +1,5 @@
 .idea
 example/main
 example_http/main
+example_http_base64_body/main
+example_http_base64_body/asdf.jpg

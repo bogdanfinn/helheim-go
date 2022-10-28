@@ -1,6 +1,8 @@
 package helheim_go
 
 import (
+	"bytes"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -202,14 +204,13 @@ func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
 		return nil, err
 	}
 
-	return &http.Response{
+	response := &http.Response{
 		Status:     fmt.Sprintf("Status Code: %d", resp.Response.StatusCode),
 		StatusCode: resp.Response.StatusCode,
 		//Proto:            "",
 		//ProtoMajor:       0,
 		//ProtoMinor:       0,
 		Header:        toGoHeader(resp.Response.Headers),
-		Body:          io.NopCloser(strings.NewReader(resp.Response.Body)),
 		ContentLength: int64(len(resp.Response.Body)), // TODO: is this correct
 		//TransferEncoding: nil,
 		//Close:            false,
@@ -217,7 +218,21 @@ func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
 		//Trailer:          nil,
 		Request: req,
 		//TLS:              nil,
-	}, nil
+	}
+
+	if c.config.isBase64Response {
+		data, err := base64.StdEncoding.DecodeString(resp.Response.Content)
+
+		if err != nil {
+			return nil, err
+		}
+
+		response.Body = io.NopCloser(bytes.NewReader(data))
+	} else {
+		response.Body = io.NopCloser(strings.NewReader(resp.Response.Body))
+	}
+
+	return response, nil
 }
 
 func (c *httpClient) GetSessionHeaders() map[string]string {
