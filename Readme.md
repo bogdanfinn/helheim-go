@@ -5,7 +5,7 @@
 This go library was created / tested with
 
 * go 1.18
-* helheim 0.9.11 py38
+* helheim 1.0.2 py310
 
 
 ### Installation
@@ -38,10 +38,14 @@ See example in `example_http_base64_body`. You need to set the `helheim_go.WithB
 
 ## Install Python
 
+**Attention**
+Venom dropped support for python 3.8 since some time. I upgraded directly to Python 3.10. It should be straight forward for you to follow this guide but do everything with python 3.10 instead of python 3.8
+
+
 ### MacOS
 
 Install Python in a version which is compatible with helheim. I used
-this: https://www.python.org/ftp/python/3.8.5/python-3.8.5-macosx10.9.pkg
+this: https://www.python.org/ftp/python/3.10.9/python-3.10.9-macos11.pkg
 
 **Important**
 
@@ -49,7 +53,7 @@ Please make sure you installed python on mac from python.org. Had a couple of me
 
 ## Windows
 
-On Windows I used https://www.python.org/ftp/python/3.8.10/python-3.8.10-amd64.exe and makre sure to add Python to PATH
+On Windows I used https://www.python.org/ftp/python/3.10.9/python-3.10.9-amd64.exe and makre sure to add Python to PATH
 during installation. You can get the Python Installation path by opening the CMD and type in python and hit enter. Then
 you execute the following code:
 
@@ -102,7 +106,7 @@ This will create the following files for you:
 ## Copy cffi library
 
 Copy the `helheim_cffi` library (`dylib, so or dll`) into your pythons lib directory. In my case it
-is: `/Library/Frameworks/Python.framework/Versions/3.8/lib`. Under Ubuntu it is: `/usr/include/python3.8`
+is: `/Library/Frameworks/Python.framework/Versions/3.10/lib`. Under Ubuntu it is: `/usr/include/python3.10`
 Under Windows it is: `C:\Users\Administrator\AppData\Local\Programs\Python\Python38`
 
 **Note:** On Linux and MacOS create a duplicate of the cffi library file and name it `libhelheim_cffi.dylib` (MacOS)
@@ -114,9 +118,9 @@ variable to start your application:
 ```
 # Specify where application finds the cffi lib file on runtime
 # MacOS
-# DYLD_LIBRARY_PATH="/Library/Frameworks/Python.framework/Versions/3.8/lib" ./yourCompiledAppBinary
+# DYLD_LIBRARY_PATH="/Library/Frameworks/Python.framework/Versions/3.10/lib" ./yourCompiledAppBinary
 # Linux
-# LD_LIBRARY_PATH="/usr/include/python3.8" ./yourCompiledAppBinary
+# LD_LIBRARY_PATH="/usr/include/python3.10" ./yourCompiledAppBinary
 # Windows
 # just copy the .dll next to your built .exe file.
 #
