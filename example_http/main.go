@@ -11,7 +11,10 @@ import (
 const YourApiKey = "INSERT_HERE"
 
 func main() {
-	helheimClient, err := helheim_go.ProvideClient(YourApiKey, false, true, nil)
+	logger := helheim_go.NewLogger()
+	logger = helheim_go.NewDebugLogger(logger)
+
+	helheimClient, err := helheim_go.ProvideClient(YourApiKey, false, true, logger)
 
 	if err != nil {
 		log.Println(err)

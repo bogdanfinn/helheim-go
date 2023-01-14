@@ -423,11 +423,11 @@ func (h *helheim) needReAuth() bool {
 
 	minutes := now.Sub(*h.lastAuth).Minutes()
 
-	h.logger.Info("%d minutes since last authentication", minutes)
+	h.logger.Info("%.2f minutes since last authentication", minutes)
 
 	needsReAuth := minutes >= authValidMinutes
 
-	h.logger.Debug("%d minutes since last auth. need re auth: %v", minutes, needsReAuth)
+	h.logger.Debug("%.2f minutes since last auth. need re auth: %v", minutes, needsReAuth)
 
 	return needsReAuth
 }

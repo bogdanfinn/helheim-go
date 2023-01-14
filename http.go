@@ -107,7 +107,7 @@ func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
 		_, err := c.session.Debug(1)
 
 		if err != nil {
-			c.logger.Error("failed to set wokou on http client default session: %w", err)
+			c.logger.Error("failed to set debug on http client default session: %w", err)
 			return nil, err
 		}
 	}
